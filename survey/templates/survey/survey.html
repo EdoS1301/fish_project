@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Опрос по новому регламенту ИБ - Министерство цифрового развития Республики Адыгея</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: linear-gradient(135deg, #f8fdff 0%, #e6f7ff 100%);
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-bottom: 3px solid #3498db;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: #3498db;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .main-title {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .main-title h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .main-title .subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+            font-weight: 300;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.1);
+            border: 1px solid #e1e8ed;
+        }
+        
+        .pdf-section {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+        
+        .pdf-section h3 {
+            margin-bottom: 15px;
+            font-weight: 300;
+            font-size: 18px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-pdf {
+            background: white;
+            color: #3498db;
+        }
+        
+        .btn-pdf:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn-submit {
+            background: #27ae60;
+            color: white;
+            width: 100%;
+            font-size: 16px;
+        }
+        
+        .btn-submit:hover {
+            background: #219a52;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-submit:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .question h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 12px 15px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    background: #f8f9fa;
+}
+
+.radio-option:hover {
+    background: rgba(52, 152, 219, 0.1);
+    border-color: rgba(52, 152, 219, 0.3);
+}
+
+.radio-option:has(input[type="radio"]:checked) {
+    background: rgba(52, 152, 219, 0.15);
+    border-color: #3498db;
+}
+
+.radio-option input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.radio-option label {
+    cursor: pointer;
+    margin: 0;
+    flex: 1;
+}
+        
+        .required {
+            color: #e74c3c;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            color: #3498db;
+        }
+        
+        .autosave-status {
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .autosave-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .autosave-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info-note {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            color: #1565c0;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #7f8c8d;
+            font-size: 14px;
+            border-top: 1px solid #e1e8ed;
+            margin-top: 40px;
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 400;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .content-card {
+                padding: 20px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .radio-group {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">МЦР</div>
+                <div class="logo-text">Министерство цифрового развития<br>Республики Адыгея</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-title">
+            <h1>ОПРОС ПО НОВОМУ РЕГЛАМЕНТУ ИНФОРМАЦИОННОЙ БЕЗОПАСНОСТИ</h1>
+            <div class="subtitle">Приказ ФСТЭК РФ от 11.04.2025 N 117</div>
+        </div>
+
+        <div class="content-card pdf-section">
+            <h3>📄 Ознакомьтесь с регламентом перед заполнением опроса</h3>
+            <a href="/download-pdf/" class="btn btn-pdf">
+                📥 Скачать регламент (PDF)
+            </a>
+        </div>
+
+        <div class="content-card">
+            <div id="autosaveStatus" class="autosave-status"></div>
+            
+            <form id="ibSurveyForm" method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="sessionId" value="{{ user_session_id }}">
+                
+                <h2 class="section-title">Контактная информация</h2>
+                
+                <div class="form-group">
+                    <label for="email">Электронная почта <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" class="form-control" required placeholder="example@mail.ru">
+                </div>
+                
+                
+                <div class="form-group">
+                    <label for="lastName">Фамилия <span class="required">*</span></label>
+                    <input type="text" id="lastName" name="last_name" class="form-control" required placeholder="Иванов">
+                </div>
+                
+                <div class="form-group">
+                    <label for="position">Должность <span class="required">*</span></label>
+                    <input type="text" id="position" name="position" class="form-control" required placeholder="Специалист">
+                </div>
+                
+                <div class="form-group">
+                    <label for="governmentBody">Орган исполнительной власти <span class="required">*</span></label>
+                    <select id="governmentBody" name="government_body" class="form-control" required>
+                        <option value="">-- Выберите орган власти --</option>
+                        <option value="minjust">Министерство юстиции</option>
+                        <option value="minfin">Министерство финансов</option>
+                        <option value="mineconom">Министерство экономического развития</option>
+                        <option value="minobr">Министерство образования</option>
+                        <option value="minzdrav">Министерство здравоохранения</option>
+                        <option value="mvd">Министерство внутренних дел</option>
+                        <option value="minoborony">Министерство обороны</option>
+                        <option value="minprirody">Министерство природных ресурсов</option>
+                        <option value="mintrans">Министерство транспорта</option>
+                        <option value="minstroy">Министерство строительства</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="department">Отдел/Управление <span class="required">*</span></label>
+                    <select id="department" name="department" class="form-control" required>
+                        <option value="">-- Выберите отдел --</option>
+                        <option value="hr">Отдел кадров</option>
+                        <option value="finance">Финансовый отдел</option>
+                        <option value="it">ИТ-отдел</option>
+                        <option value="legal">Юридический отдел</option>
+                        <option value="analytics">Отдел аналитики</option>
+                        <option value="security">Служба безопасности</option>
+                        <option value="administration">Административный отдел</option>
+                        <option value="international">Международный отдел</option>
+                        <option value="press">Пресс-служба</option>
+                        <option value="documentation">Отдел документооборота</option>
+                    </select>
+                </div>
+                
+                <h2 class="section-title">Вопросы опроса</h2>
+                
+                <div class="question">
+                    <h3>1. Соответствует ли ваш текущий пароль следующим требованиям:</h3>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="compliance1" name="password_compliance" value="full" required>
+                            <label for="compliance1">Полностью соответствует всем требованиям</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="compliance2" name="password_compliance" value="partial">
+                            <label for="compliance2">Соответствует частично</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="compliance3" name="password_compliance" value="none">
+                            <label for="compliance3">Не соответствует требованиям</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h3>2. Используете ли вы двухфакторную аутентификацию?</h3>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="2fa1" name="two_factor" value="yes" required>
+                            <label for="2fa1">Да</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="2fa2" name="two_factor" value="no">
+                            <label for="2fa2">Нет</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="2fa3" name="two_factor" value="sometimes">
+                            <label for="2fa3">Иногда</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h3>3. Как часто вы меняете пароли?</h3>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="change1" name="password_change" value="monthly" required>
+                            <label for="change1">Ежемесячно</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="change2" name="password_change" value="quarterly">
+                            <label for="change2">Ежеквартально</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="change3" name="password_change" value="yearly">
+                            <label for="change3">Раз в год</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="change4" name="password_change" value="never">
+                            <label for="change4">Не меняю</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h3>4. Ознакомлены ли вы с новым регламентом ИБ?</h3>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="familiar1" name="familiar" value="fully" required>
+                            <label for="familiar1">Полностью ознакомлен</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="familiar2" name="familiar" value="partially">
+                            <label for="familiar2">Частично ознакомлен</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="familiar3" name="familiar" value="not">
+                            <label for="familiar3">Не ознакомлен</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-submit" id="submitButton">
+                    ✅ Отправить ответы
+                </button>
+                
+                <div class="loading" id="loadingIndicator">
+                    Отправка данных...
+                </div>
+            </form>
+        </div>
+        
+        <div class="footer">
+            © 2025 Министерство цифрового развития и телекоммуникационных технологий Республики Адыгея<br>
+            Все ответы защищены служебной тайной
+        </div>
+    </div>
+
+<script>
+    let autosaveTimeout;
+    const sessionId = document.getElementById('sessionId').value;
+    
+    // Функция автосохранения формы
+    function autosaveForm() {
+        const email = document.getElementById('email').value.trim();
+        
+        if (!email) {
+            return; // Не сохраняем если email не заполнен
+        }
+        
+        const formData = {
+            session_id: sessionId,
+            email: email,
+            password_compliance: getSelectedRadioValue('password_compliance'),
+            two_factor: getSelectedRadioValue('two_factor'),
+            password_change: getSelectedRadioValue('password_change'),
+            familiar: getSelectedRadioValue('familiar')
+        };
+        
+        // Проверяем, есть ли хотя бы одно заполненное поле (кроме email)
+        const hasData = Object.entries(formData).some(([key, value]) => 
+            key !== 'email' && key !== 'session_id' && value && value !== '' && value !== 'unknown'
+        );
+        
+        if (hasData) {
+            fetch('/autosave/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(formData)
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.status === 'success') {
+                      showAutosaveStatus('✅ Данные автоматически сохранены для email: ' + email, 'success');
+                  }
+              })
+              .catch(error => {
+                  console.error('Autosave error:', error);
+                  showAutosaveStatus('⚠️ Ошибка автосохранения', 'error');
+              });
+        }
+    }
+    
+    // Функция для получения значения выбранного radio button
+    function getSelectedRadioValue(name) {
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        return selected ? selected.value : '';
+    }
+    
+    // Функция показа статуса автосохранения
+    function showAutosaveStatus(message, type) {
+        const statusElement = document.getElementById('autosaveStatus');
+        statusElement.textContent = message;
+        statusElement.className = `autosave-status autosave-${type === 'success' ? 'success' : 'error'}`;
+        statusElement.style.display = 'block';
+        
+        // Скрываем сообщение через 3 секунды
+        setTimeout(() => {
+            statusElement.style.display = 'none';
+        }, 3000);
+    }
+    
+    // Обработчики событий для автосохранения
+    const formElements = document.querySelectorAll('#ibSurveyForm input, #ibSurveyForm select');
+    formElements.forEach(element => {
+        element.addEventListener('input', () => {
+            // Откладываем автосохранение на 1 секунду после последнего изменения
+            clearTimeout(autosaveTimeout);
+            autosaveTimeout = setTimeout(autosaveForm, 1000);
+        });
+        
+        element.addEventListener('change', () => {
+            // Для radio buttons и select сразу сохраняем
+            clearTimeout(autosaveTimeout);
+            autosaveForm();
+        });
+    });
+    
+    // Обработка отправки формы
+    document.getElementById('ibSurveyForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitButton = document.getElementById('submitButton');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        
+        // Блокируем кнопку и показываем индикатор загрузки
+        submitButton.disabled = true;
+        loadingIndicator.style.display = 'block';
+        
+        const formData = new FormData(this);
+        const email = document.getElementById('email').value.trim();
+        
+        if (!email) {
+            alert('Пожалуйста, введите электронную почту');
+            submitButton.disabled = false;
+            loadingIndicator.style.display = 'none';
+            return;
+        }
+        
+        // Сначала отправляем информацию о нажатии кнопки
+        const buttonClickData = {
+            session_id: sessionId,
+            email: email
+        };
+        
+        // Отправляем информацию о нажатии кнопки
+        fetch('/button-click/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify(buttonClickData)
+        }).then(buttonResponse => {
+            if (!buttonResponse.ok) {
+                throw new Error('Ошибка при сохранении информации о нажатии кнопки');
+            }
+            return buttonResponse.json();
+        }).then(buttonData => {
+            // После успешного сохранения информации о нажатии, отправляем данные формы
+            return fetch('', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            });
+        }).then(formResponse => {
+            if (formResponse.ok) {
+                // alert('Спасибо за участие в опросе!');
+                // Перенаправление на страницу успеха
+                window.location.href = '/success';
+            } else {
+                throw new Error('Ошибка при отправке формы');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            alert('Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.');
+            
+            // Разблокируем кнопку и скрываем индикатор загрузки
+            submitButton.disabled = false;
+            loadingIndicator.style.display = 'none';
+        });
+    });
+    
+    // Автосохранение при закрытии страницы
+    window.addEventListener('beforeunload', function() {
+        autosaveForm();
+    });
+</script>
+</body>
+</html>
