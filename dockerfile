@@ -1,19 +1,16 @@
 FROM python:3.11-slim
 
 RUN apt-get update && apt-get install -y \
-    postgresql-dev \
+    libpq-dev \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd --create-home --shell /bin/bash app
-USER app
 WORKDIR /home/app
 
-COPY --chown=app:app requirements.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем ВЕСЬ проект включая static/
-COPY --chown=app:app . .
+COPY . .
 
 RUN mkdir -p staticfiles
 

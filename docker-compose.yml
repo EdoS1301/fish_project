@@ -1,19 +1,17 @@
-version: '3.8'
 
 services:
   web:
     build: .
-    ports:
-      - "8000:8000"
     env_file:
       - .env
     depends_on:
       - db
     # НЕ монтируем папку static - файлы будут внутри контейнера
     command: >
-      sh -c "python manage.py migrate &&
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
              python manage.py collectstatic --noinput &&
-             gunicorn fish.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+             gunicorn fish.wsgi:application --bind 0.0.0.0:8000"
     restart: unless-stopped
 
   db:
@@ -35,6 +33,7 @@ services:
       # Монтируем ТОЛЬКО собранные статические файлы
       - ./staticfiles:/home/app/staticfiles:ro
     depends_on:
+      - db
       - web
     restart: unless-stopped
 
