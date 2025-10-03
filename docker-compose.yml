@@ -6,6 +6,8 @@ services:
       - .env
     depends_on:
       - db
+    volumes:
+      - static_volume:/home/app/staticfiles  # Добавьте эту строку
     # НЕ монтируем папку static - файлы будут внутри контейнера
     command: >
       sh -c "python manage.py makemigrations &&
@@ -31,7 +33,7 @@ services:
     volumes:
       - ./nginx_simple.conf:/etc/nginx/nginx.conf:ro
       # Монтируем ТОЛЬКО собранные статические файлы
-      - ./staticfiles:/home/app/staticfiles:ro
+      - static_volume:/home/app/staticfiles:ro # Та же папка в nginx  # Используем volume вместо ./staticfile
     depends_on:
       - db
       - web
@@ -39,3 +41,4 @@ services:
 
 volumes:
   postgres_data:
+  static_volume:  # Добавьте эту строк
