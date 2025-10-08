@@ -81,7 +81,8 @@ def autosave_form(request):
             if deleted_count > 0:
                 print(f"Удалено {deleted_count} старых автосохранений для email: {email}")
             
-            # Создаем новую запись автосохранения
+            # СОЗДАЕМ ЗАПИСЬ ДАЖЕ ЕСЛИ ТОЛЬКО EMAIL ЗАПОЛНЕН
+            # Для незаполненных полей используем пустые строки вместо 'not_submitted'
             SurveyResponse.objects.create(
                 session_id=user_session_id,
                 email=email,

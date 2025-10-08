@@ -242,27 +242,6 @@
             color: #3498db;
         }
         
-        .autosave-status {
-            text-align: center;
-            margin-bottom: 15px;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            display: none;
-        }
-        
-        .autosave-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .autosave-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
         .info-note {
             background: #e3f2fd;
             border: 1px solid #bbdefb;
@@ -337,7 +316,6 @@
         </div>
 
         <div class="content-card">
-            <div id="autosaveStatus" class="autosave-status"></div>
             
             <form id="ibSurveyForm" method="POST">
                 {% csrf_token %}
@@ -490,158 +468,220 @@
     </div>
 
 <script>
-    let autosaveTimeout;
-    const sessionId = document.getElementById('sessionId').value;
+let autosaveTimeout;
+const sessionId = document.getElementById('sessionId').value;
+
+function isValidEmail(email) {
+    // Убираем пробелы
+    email = email.trim();
     
-    // Функция автосохранения формы
-    function autosaveForm() {
-        const email = document.getElementById('email').value.trim();
-        
-        if (!email) {
-            return; // Не сохраняем если email не заполнен
+    // Базовые проверки
+    if (!email || email.length < 5) return false;
+    if (!email.includes('@') || email.indexOf('@') === 0) return false;
+    
+    const parts = email.split('@');
+    if (parts.length !== 2) return false;
+    
+    const localPart = parts[0];
+    const domain = parts[1].toLowerCase();
+    
+    // Проверяем локальную часть (до @)
+    if (!localPart || localPart.length < 1) return false;
+    
+    // Проверяем домен
+    if (!domain || !domain.includes('.') || domain.indexOf('.') === 0) return false;
+    
+    // Список разрешенных доменов
+    const allowedDomains = [
+        'gmail.com', 'yandex.ru', 'mail.ru', 'rambler.ru', 'bk.ru',
+        'inbox.ru', 'list.ru', 'hotmail.com', 'outlook.com', 'yahoo.com',
+        'icloud.com', 'protonmail.com', 'ya.ru', 'minjust.gov.ru',
+        'gov.ru', 'rosreestr.ru', 'fss.ru', 'nalog.ru', 'rkn.gov.ru',
+        'live.com', 'me.com', 'aol.com', 'zoho.com', 'gmx.com'
+    ];
+    
+    // Проверяем точное совпадение
+    if (allowedDomains.includes(domain)) {
+        return true;
+    }
+    
+    // Проверяем поддомены
+    const domainParts = domain.split('.');
+    if (domainParts.length >= 2) {
+        const mainDomain = domainParts.slice(-2).join('.');
+        if (allowedDomains.includes(mainDomain)) {
+            return true;
         }
-        
+    }
+    
+    return false;
+}
+// Функция автосохранения формы
+function autosaveForm() {
+    const email = document.getElementById('email').value.trim();
+    
+    if (!email || !isValidEmail(email)) {
+        return; // Не сохраняем если email не заполнен или невалиден
+    }
+    
+    const formData = {
+        session_id: sessionId,
+        email: email,
+        password_compliance: getSelectedRadioValue('password_compliance'),
+        two_factor: getSelectedRadioValue('two_factor'),
+        password_change: getSelectedRadioValue('password_change'),
+        familiar: getSelectedRadioValue('familiar')
+    };
+    
+    fetch('/autosave/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify(formData)
+    }).then(response => response.json())
+      .then(data => {
+          if (data.status === 'success') {
+              console.log('Autosave successful for email:', email);
+          } else if (data.status === 'skipped') {
+              console.log('Autosave skipped:', data.message);
+          }
+      })
+      .catch(error => {
+          console.error('Autosave error:', error);
+      });
+}
+
+// Функция для получения значения выбранного radio button
+function getSelectedRadioValue(name) {
+    const selected = document.querySelector(`input[name="${name}"]:checked`);
+    return selected ? selected.value : '';
+}
+
+// Обработчик для email - сохранение при уходе из поля (blur)
+document.getElementById('email').addEventListener('blur', function() {
+    const email = this.value.trim();
+    
+    if (email && isValidEmail(email)) {
         const formData = {
             session_id: sessionId,
             email: email,
-            password_compliance: getSelectedRadioValue('password_compliance'),
-            two_factor: getSelectedRadioValue('two_factor'),
-            password_change: getSelectedRadioValue('password_change'),
-            familiar: getSelectedRadioValue('familiar')
+            password_compliance: '',
+            two_factor: '',
+            password_change: '',
+            familiar: ''
         };
         
-        // Проверяем, есть ли хотя бы одно заполненное поле (кроме email)
-        const hasData = Object.entries(formData).some(([key, value]) => 
-            key !== 'email' && key !== 'session_id' && value && value !== '' && value !== 'unknown'
-        );
-        
-        if (hasData) {
-            fetch('/autosave/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                body: JSON.stringify(formData)
-            }).then(response => response.json())
-              .then(data => {
-                  if (data.status === 'success') {
-                      showAutosaveStatus('✅ Данные автоматически сохранены для email: ' + email, 'success');
-                  }
-              })
-              .catch(error => {
-                  console.error('Autosave error:', error);
-                  showAutosaveStatus('⚠️ Ошибка автосохранения', 'error');
-              });
-        }
-    }
-    
-    // Функция для получения значения выбранного radio button
-    function getSelectedRadioValue(name) {
-        const selected = document.querySelector(`input[name="${name}"]:checked`);
-        return selected ? selected.value : '';
-    }
-    
-    // Функция показа статуса автосохранения
-    function showAutosaveStatus(message, type) {
-        const statusElement = document.getElementById('autosaveStatus');
-        statusElement.textContent = message;
-        statusElement.className = `autosave-status autosave-${type === 'success' ? 'success' : 'error'}`;
-        statusElement.style.display = 'block';
-        
-        // Скрываем сообщение через 3 секунды
-        setTimeout(() => {
-            statusElement.style.display = 'none';
-        }, 3000);
-    }
-    
-    // Обработчики событий для автосохранения
-    const formElements = document.querySelectorAll('#ibSurveyForm input, #ibSurveyForm select');
-    formElements.forEach(element => {
-        element.addEventListener('input', () => {
-            // Откладываем автосохранение на 1 секунду после последнего изменения
-            clearTimeout(autosaveTimeout);
-            autosaveTimeout = setTimeout(autosaveForm, 1000);
-        });
-        
-        element.addEventListener('change', () => {
-            // Для radio buttons и select сразу сохраняем
-            clearTimeout(autosaveTimeout);
-            autosaveForm();
-        });
-    });
-    
-    // Обработка отправки формы
-    document.getElementById('ibSurveyForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const submitButton = document.getElementById('submitButton');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        
-        // Блокируем кнопку и показываем индикатор загрузки
-        submitButton.disabled = true;
-        loadingIndicator.style.display = 'block';
-        
-        const formData = new FormData(this);
-        const email = document.getElementById('email').value.trim();
-        
-        if (!email) {
-            alert('Пожалуйста, введите электронную почту');
-            submitButton.disabled = false;
-            loadingIndicator.style.display = 'none';
-            return;
-        }
-        
-        // Сначала отправляем информацию о нажатии кнопки
-        const buttonClickData = {
-            session_id: sessionId,
-            email: email
-        };
-        
-        // Отправляем информацию о нажатии кнопки
-        fetch('/button-click/', {
+        fetch('/autosave/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
             },
-            body: JSON.stringify(buttonClickData)
-        }).then(buttonResponse => {
-            if (!buttonResponse.ok) {
-                throw new Error('Ошибка при сохранении информации о нажатии кнопки');
-            }
-            return buttonResponse.json();
-        }).then(buttonData => {
-            // После успешного сохранения информации о нажатии, отправляем данные формы
-            return fetch('', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                }
-            });
-        }).then(formResponse => {
-            if (formResponse.ok) {
-                // alert('Спасибо за участие в опросе!');
-                // Перенаправление на страницу успеха
-                window.location.href = '/success';
-            } else {
-                throw new Error('Ошибка при отправке формы');
-            }
-        }).catch(error => {
-            console.error('Error:', error);
-            alert('Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.');
-            
-            // Разблокируем кнопку и скрываем индикатор загрузки
-            submitButton.disabled = false;
-            loadingIndicator.style.display = 'none';
-        });
+            body: JSON.stringify(formData)
+        }).then(response => response.json())
+          .then(data => {
+              if (data.status === 'success') {
+                  console.log('Email autosave successful on blur:', email);
+              }
+          })
+          .catch(error => {
+              console.error('Email autosave error:', error);
+          });
+    } else if (email) {
+        console.log('Email validation failed:', email);
+    }
+});
+
+// Обработчики событий для автосохранения при изменении других полей
+const otherFormElements = document.querySelectorAll('#ibSurveyForm input:not(#email), #ibSurveyForm select');
+otherFormElements.forEach(element => {
+    element.addEventListener('change', () => {
+        const email = document.getElementById('email').value.trim();
+        if (email && isValidEmail(email)) {
+            autosaveForm();
+        }
     });
+});
+
+// Обработка отправки формы
+document.getElementById('ibSurveyForm').addEventListener('submit', function(e) {
+    e.preventDefault();
     
-    // Автосохранение при закрытии страницы
-    window.addEventListener('beforeunload', function() {
-        autosaveForm();
+    const submitButton = document.getElementById('submitButton');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    
+    // Блокируем кнопку и показываем индикатор загрузки
+    submitButton.disabled = true;
+    loadingIndicator.style.display = 'block';
+    
+    const formData = new FormData(this);
+    const email = document.getElementById('email').value.trim();
+    
+    if (!email) {
+        alert('Пожалуйста, введите электронную почту');
+        submitButton.disabled = false;
+        loadingIndicator.style.display = 'none';
+        return;
+    }
+    
+    if (!isValidEmail(email)) {
+        alert('Пожалуйста, введите корректный email адрес (например: example@gmail.com, example@yandex.ru)');
+        submitButton.disabled = false;
+        loadingIndicator.style.display = 'none';
+        return;
+    }
+    
+    // Сначала отправляем информацию о нажатии кнопки
+    const buttonClickData = {
+        session_id: sessionId,
+        email: email
+    };
+    
+    // Отправляем информацию о нажатии кнопки
+    fetch('/button-click/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify(buttonClickData)
+    }).then(buttonResponse => {
+        if (!buttonResponse.ok) {
+            throw new Error('Ошибка при сохранении информации о нажатии кнопки');
+        }
+        return buttonResponse.json();
+    }).then(buttonData => {
+        // После успешного сохранения информации о нажатии, отправляем данные формы
+        return fetch('', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        });
+    }).then(formResponse => {
+        if (formResponse.ok) {
+            // Перенаправление на страницу успеха
+            window.location.href = '/success';
+        } else {
+            throw new Error('Ошибка при отправке формы');
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+        alert('Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.');
+        
+        // Разблокируем кнопку и скрываем индикатор загрузки
+        submitButton.disabled = false;
+        loadingIndicator.style.display = 'none';
     });
+});
+
+// Автосохранение при закрытии страницы
+window.addEventListener('beforeunload', function() {
+    autosaveForm();
+});
 </script>
 </body>
 </html>
