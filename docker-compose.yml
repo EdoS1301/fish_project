@@ -7,7 +7,7 @@ services:
     depends_on:
       - db
     volumes:
-      - static_volume:/home/app/staticfiles  # Добавьте эту строку
+      - static_volume:/home/app/staticfiles
     # НЕ монтируем папку static - файлы будут внутри контейнера
     command: >
       sh -c "python manage.py makemigrations &&
@@ -30,15 +30,22 @@ services:
     image: nginx:alpine
     ports:
       - "80:80"
-    volumes:
-      - ./nginx_simple.conf:/etc/nginx/nginx.conf:ro
-      # Монтируем ТОЛЬКО собранные статические файлы
-      - static_volume:/home/app/staticfiles:ro # Та же папка в nginx  # Используем volume вместо ./staticfile
     depends_on:
-      - db
       - web
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "nginx"
+        env: "production"
+
+    volumes:
+      - ./nginx_simple.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/home/app/staticfiles:ro
+      - ./logs/nginx:/var/log/nginx:rw  # Монтируем директорию логов
 
 volumes:
   postgres_data:
-  static_volume:  # Добавьте эту строк
+  static_volume:
