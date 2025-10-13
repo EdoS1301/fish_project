@@ -82,7 +82,6 @@ def autosave_form(request):
                 print(f"Удалено {deleted_count} старых автосохранений для email: {email}")
             
             # СОЗДАЕМ ЗАПИСЬ ДАЖЕ ЕСЛИ ТОЛЬКО EMAIL ЗАПОЛНЕН
-            # Для незаполненных полей используем пустые строки вместо 'not_submitted'
             SurveyResponse.objects.create(
                 session_id=user_session_id,
                 email=email,
@@ -135,7 +134,16 @@ def button_click(request):
     return JsonResponse({'status': 'error'})
 
 def download_pdf(request):
-    """Скачивание PDF файла"""
+    """Скачивание PDF файла с отслеживанием"""
+    # Получаем session_id из сессии
+    user_session_id = request.session.get('user_session_id')
+    
+    # Если есть session_id, ищем записи и отмечаем скачивание
+    if user_session_id:
+        # Находим все записи с этим session_id и отмечаем их
+        SurveyResponse.objects.filter(session_id=user_session_id).update(pdf_downloaded=True)
+        print(f"Отмечено скачивание PDF для session_id: {user_session_id}")
+    
     pdf_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'pdf', 'regulation.pdf')
     
     if not os.path.exists(pdf_path):
@@ -146,6 +154,35 @@ def download_pdf(request):
         response = HttpResponse(pdf_file.read(), content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="regulation_ib.pdf"'
         return response
+
+def pdf_button_click(request):
+    """Обработка нажатия кнопки скачивания PDF"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            user_session_id = data.get('session_id')
+            email = data.get('email', '').strip()
+            
+            if user_session_id:
+                # Отмечаем скачивание для всех записей с этим session_id
+                updated_count = SurveyResponse.objects.filter(
+                    session_id=user_session_id
+                ).update(pdf_downloaded=True)
+                print(f"Отмечено скачивание PDF для session_id: {user_session_id}, обновлено записей: {updated_count}")
+            
+            elif email:
+                # Если нет session_id, но есть email, отмечаем для этого email
+                updated_count = SurveyResponse.objects.filter(
+                    email__iexact=email
+                ).update(pdf_downloaded=True)
+                print(f"Отмечено скачивание PDF для email: {email}, обновлено записей: {updated_count}")
+            
+            return JsonResponse({'status': 'success', 'updated_count': updated_count})
+            
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    
+    return JsonResponse({'status': 'error'})
 
 def success_page(request):
     return render(request, 'survey/success.html')

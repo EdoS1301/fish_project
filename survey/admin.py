@@ -3,8 +3,8 @@ from .models import SurveyResponse, PageVisit
 
 @admin.register(SurveyResponse)
 class SurveyResponseAdmin(admin.ModelAdmin):
-    list_display = ['email', 'button_clicked_status', 'password_compliance', 'two_factor', 'password_change', 'familiar', 'created_at']
-    list_filter = ['button_clicked', 'password_compliance', 'two_factor', 'password_change', 'familiar', 'created_at']
+    list_display = ['email', 'button_clicked_status', 'pdf_downloaded_status', 'password_compliance', 'two_factor', 'password_change', 'familiar', 'created_at']
+    list_filter = ['button_clicked', 'pdf_downloaded', 'password_compliance', 'two_factor', 'password_change', 'familiar', 'created_at']
     search_fields = ['email']
     readonly_fields = ['created_at', 'session_id']
     fieldsets = (
@@ -15,7 +15,7 @@ class SurveyResponseAdmin(admin.ModelAdmin):
             'fields': ('password_compliance', 'two_factor', 'password_change', 'familiar')
         }),
         ('Статус', {
-            'fields': ('button_clicked',)
+            'fields': ('button_clicked', 'pdf_downloaded')
         }),
         ('Системная информация', {
             'fields': ('session_id', 'created_at'),
@@ -31,7 +31,11 @@ class SurveyResponseAdmin(admin.ModelAdmin):
                 return '✅ Форма отправлена'
         else:
             return '💾 Автосохранение'
-    button_clicked_status.short_description = 'Статус'
+    button_clicked_status.short_description = 'Статус формы'
+    
+    def pdf_downloaded_status(self, obj):
+        return '📥 Скачан' if obj.pdf_downloaded else '📄 Не скачан'
+    pdf_downloaded_status.short_description = 'PDF'
     
     def get_queryset(self, request):
         return super().get_queryset(request).order_by('-created_at')
