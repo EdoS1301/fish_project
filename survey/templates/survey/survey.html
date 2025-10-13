@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Опрос по новому регламенту ИБ - Министерство цифрового развития Республики Адыгея</title>
+    <title>Опрос по новому регламенту ИБ - Министерство цифрового развития</title>
     <style>
         * {
             margin: 0;
@@ -297,7 +297,7 @@
         <div class="header-content">
             <div class="logo">
                 <div class="logo-icon">МЦР</div>
-                <div class="logo-text">Министерство цифрового развития<br>Республики Адыгея</div>
+                <div class="logo-text">Министерство цифрового развития<br></div>
             </div>
         </div>
     </div>
@@ -338,118 +338,141 @@
                     <input type="text" id="position" name="position" class="form-control" required placeholder="Специалист">
                 </div>
                 
-                <div class="form-group">
-                    <label for="governmentBody">Орган исполнительной власти <span class="required">*</span></label>
-                    <select id="governmentBody" name="government_body" class="form-control" required>
-                        <option value="">-- Выберите орган власти --</option>
-                        <option value="minjust">Министерство юстиции</option>
-                        <option value="minfin">Министерство финансов</option>
-                        <option value="mineconom">Министерство экономического развития</option>
-                        <option value="minobr">Министерство образования</option>
-                        <option value="minzdrav">Министерство здравоохранения</option>
-                        <option value="mvd">Министерство внутренних дел</option>
-                        <option value="minoborony">Министерство обороны</option>
-                        <option value="minprirody">Министерство природных ресурсов</option>
-                        <option value="mintrans">Министерство транспорта</option>
-                        <option value="minstroy">Министерство строительства</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="department">Отдел/Управление <span class="required">*</span></label>
-                    <select id="department" name="department" class="form-control" required>
-                        <option value="">-- Выберите отдел --</option>
-                        <option value="hr">Отдел кадров</option>
-                        <option value="finance">Финансовый отдел</option>
-                        <option value="it">ИТ-отдел</option>
-                        <option value="legal">Юридический отдел</option>
-                        <option value="analytics">Отдел аналитики</option>
-                        <option value="security">Служба безопасности</option>
-                        <option value="administration">Административный отдел</option>
-                        <option value="international">Международный отдел</option>
-                        <option value="press">Пресс-служба</option>
-                        <option value="documentation">Отдел документооборота</option>
-                    </select>
-                </div>
-                
-                <h2 class="section-title">Вопросы опроса</h2>
-                
-                <div class="question">
-                    <h3>1. Соответствует ли ваш текущий пароль следующим требованиям:</h3>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="compliance1" name="password_compliance" value="full" required>
-                            <label for="compliance1">Полностью соответствует всем требованиям</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="compliance2" name="password_compliance" value="partial">
-                            <label for="compliance2">Соответствует частично</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="compliance3" name="password_compliance" value="none">
-                            <label for="compliance3">Не соответствует требованиям</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="question">
-                    <h3>2. Используете ли вы двухфакторную аутентификацию?</h3>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="2fa1" name="two_factor" value="yes" required>
-                            <label for="2fa1">Да</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="2fa2" name="two_factor" value="no">
-                            <label for="2fa2">Нет</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="2fa3" name="two_factor" value="sometimes">
-                            <label for="2fa3">Иногда</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="question">
-                    <h3>3. Как часто вы меняете пароли?</h3>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="change1" name="password_change" value="monthly" required>
-                            <label for="change1">Ежемесячно</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="change2" name="password_change" value="quarterly">
-                            <label for="change2">Ежеквартально</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="change3" name="password_change" value="yearly">
-                            <label for="change3">Раз в год</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="change4" name="password_change" value="never">
-                            <label for="change4">Не меняю</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="question">
-                    <h3>4. Ознакомлены ли вы с новым регламентом ИБ?</h3>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="familiar1" name="familiar" value="fully" required>
-                            <label for="familiar1">Полностью ознакомлен</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="familiar2" name="familiar" value="partially">
-                            <label for="familiar2">Частично ознакомлен</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="familiar3" name="familiar" value="not">
-                            <label for="familiar3">Не ознакомлен</label>
-                        </div>
-                    </div>
-                </div>
-                
+<div class="form-group">
+    <label for="governmentBody">Орган исполнительной власти Республики Адыгея <span class="required">*</span></label>
+    <select id="governmentBody" name="government_body" class="form-control" required>
+        <option value="">-- Выберите орган власти --</option>
+        
+        <!-- Федеральные органы, подведомственные Минцифры России -->
+        <optgroup label="Территориальные органы федеральных органов власти">
+            <option value="roskomnadzor_ad">Управление Роскомнадзора по Республике Адыгея</option>
+            <option value="mincirf_ad">Территориальный орган Минцифры России в Республике Адыгея</option>
+        </optgroup>
+        
+        <!-- Органы власти Республики Адыгея -->
+        <optgroup label="Органы власти Республики Адыгея">
+            <option value="mincirf_ad_local">Министерство цифрового развития Республики Адыгея</option>
+            <option value="minjust_ad">Министерство юстиции Республики Адыгея</option>
+            <option value="minfin_ad">Министерство финансов Республики Адыгея</option>
+            <option value="mineconom_ad">Министерство экономического развития Республики Адыгея</option>
+            <option value="minobr_ad">Министерство образования и науки Республики Адыгея</option>
+            <option value="minzdrav_ad">Министерство здравоохранения Республики Адыгея</option>
+            <option value="mvd_ad">Министерство внутренних дел по Республике Адыгея</option>
+            <option value="minprirody_ad">Министерство природных ресурсов Республики Адыгея</option>
+        </optgroup>
+        
+        <!-- Ключевые учреждения в сфере цифровизации -->
+        <optgroup label="Учреждения и организации">
+            <option value="gitech_ad">ГБУ РА "Центр информационных технологий"</option>
+            <option value="multifunc_center">Многофункциональный центр предоставления государственных услуг</option>
+            <option value="archive_ad">Государственный архив Республики Адыгея</option>
+        </optgroup>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="department">Структурное подразделение <span class="required">*</span></label>
+    <select id="department" name="department" class="form-control" required>
+        <option value="">-- Выберите подразделение --</option>
+        
+        <optgroup label="Руководство">
+            <option value="administration">Аппарат руководства</option>
+            <option value="secretariat">Секретариат</option>
+        </optgroup>
+        
+        <optgroup label="Профильные отделы по ИБ и цифровизации">
+            <option value="ib_department">Отдел информационной безопасности</option>
+            <option value="it_department">Управление информационных технологий</option>
+            <option value="digital_development">Отдел цифрового развития</option>
+            <option value="data_processing">Отдел обработки персональных данных</option>
+            <option value="technical_support">Отдел технической поддержки</option>
+        </optgroup>
+        
+        <optgroup label="Основные отделы">
+            <option value="hr">Отдел кадров и госслужбы</option>
+            <option value="finance">Финансово-экономический отдел</option>
+            <option value="legal">Правовой отдел</option>
+            <option value="documentation">Отдел документооборота</option>
+            <option value="analytics">Аналитический отдел</option>
+        </optgroup>
+    </select>
+</div>
+
+<h2 class="section-title">Вопросы</h2>
+
+<div class="question">
+    <h3>1. Соответствие парольной политики требованиям Минцифры России</h3>
+    <div class="radio-group">
+        <div class="radio-option">
+            <input type="radio" id="compliance1" name="password_compliance" value="full" required>
+            <label for="compliance1">Полностью соответствует (сложность 12+ символов, регулярная смена)</label>
+        </div>
+        <div class="radio-option">
+            <input type="radio" id="compliance2" name="password_compliance" value="partial">
+            <label for="compliance2">Частично соответствует (требуется усиление)</label>
+        </div>
+        <div class="radio-option">
+            <input type="radio" id="compliance3" name="password_compliance" value="critical">
+            <label for="compliance3">Критические нарушения политики</label>
+        </div>
+    </div>
+</div>
+
+<div class="question">
+    <h3>2. Использование средств двухфакторной аутентификации при доступе к государственным информационным системам</h3>
+    <div class="radio-group">
+        <div class="radio-option">
+            <input type="radio" id="2fa1" name="two_factor" value="always" required>
+            <label for="2fa1">Обязательно для всех систем</label>
+        </div>
+        <div class="radio-option">
+            <input type="radio" id="2fa2" name="two_factor" value="partial">
+            <label for="2fa2">Частично (только для критичных систем)</label>
+        </div>
+        <div class="radio-option">
+            <input type="radio" id="2fa3" name="two_factor" value="none">
+            <label for="2fa3">Не используется</label>
+        </div>
+    </div>
+</div>
+
+<div class="question">
+    <h3>3. Обработка персональных данных</h3>
+    <div class="radio-group">
+        <div class="radio-option">
+            <input type="radio" id="data1" name="data_processing" value="encrypted" required>
+            <label for="data1">Используется шифрование, строгий контроль доступа</label>
+        </div>
+        <div class="radio-option">
+            <input type="radio" id="data2" name="data_processing" value="basic">
+            <label for="data2">Базовые меры защиты</label>
+        </div>
+        <div class="radio-option">
+            <input type="radio" id="data3" name="data_processing" value="risks">
+            <label for="data3">Выявлены риски несанкционированного доступа</label>
+        </div>
+    </div>
+</div>
+
+<div class="question">
+    <h3>4. Регулярность проведения инструктажей по информационной безопасности</h3>
+    <div class="radio-group">
+        <div class="radio-option">
+            <input type="radio" id="training1" name="security_training" value="quarterly" required>
+            <label for="training1">Ежеквартально с фиксацией в журнале</label>
+        </div>
+        <div class="radio-option">
+            <input type="radio" id="training2" name="security_training" value="yearly">
+            <label for="training2">Ежегодно</label>
+        </div>
+        <div class="radio-option">
+            <input type="radio" id="training3" name="security_training" value="irregular">
+            <label for="training3">Нерегулярно/по мере необходимости</label>
+        </div>
+    </div>
+</div>
+
+</div>  
                 <button type="submit" class="btn btn-submit" id="submitButton">
                     ✅ Отправить ответы
                 </button>
@@ -461,8 +484,7 @@
         </div>
         
         <div class="footer">
-            © 2025 Министерство цифрового развития и телекоммуникационных технологий Республики Адыгея<br>
-            Все ответы защищены служебной тайной
+            © 2025 Министерство цифрового развития<br>
         </div>
     </div>
 
