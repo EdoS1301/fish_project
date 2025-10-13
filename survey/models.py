@@ -8,7 +8,7 @@ class SurveyResponse(models.Model):
     password_change = models.CharField(max_length=20, verbose_name="Смена паролей")
     familiar = models.CharField(max_length=20, verbose_name="Ознакомление с регламентом")
     button_clicked = models.BooleanField(default=False, verbose_name="Кнопка нажата")
-    pdf_downloaded = models.BooleanField(default=False, verbose_name="PDF скачан")  # Новое поле
+    pdf_downloaded = models.BooleanField(default=False, verbose_name="PDF скачан")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     
     def __str__(self):
@@ -32,3 +32,19 @@ class PageVisit(models.Model):
         verbose_name = "Посещение страницы"
         verbose_name_plural = "Посещения страниц"
         ordering = ['-visited_at']
+
+# НОВАЯ МОДЕЛЬ ДЛЯ СЧЕТЧИКА ПОСЕЩЕНИЙ ПО IP
+class IPVisitCounter(models.Model):
+    ip_address = models.GenericIPAddressField(verbose_name="IP адрес", unique=True)
+    visit_count = models.IntegerField(default=0, verbose_name="Количество посещений")
+    first_visit = models.DateTimeField(auto_now_add=True, verbose_name="Первое посещение")
+    last_visit = models.DateTimeField(auto_now=True, verbose_name="Последнее посещение")
+    pdf_downloaded = models.BooleanField(default=False, verbose_name="PDF скачан с этого IP")
+    
+    def __str__(self):
+        return f"{self.ip_address} - {self.visit_count} посещений"
+    
+    class Meta:
+        verbose_name = "Счетчик посещений по IP"
+        verbose_name_plural = "Счетчики посещений по IP"
+        ordering = ['-visit_count', '-last_visit']

@@ -3,18 +3,38 @@ from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
 from datetime import timedelta
 import os
-from .models import SurveyResponse, PageVisit
+from .models import SurveyResponse, PageVisit, IPVisitCounter
 from .forms import SurveyForm
 import json
 
 def survey_page(request):
-    # Считаем посещение страницы
-    if not request.session.get('visited'):
-        PageVisit.objects.create(
-            ip_address=get_client_ip(request),
-            user_agent=request.META.get('HTTP_USER_AGENT', '')
+    # Получаем IP клиента
+    client_ip = get_client_ip(request)
+    
+    # Обновляем счетчик посещений для этого IP
+    try:
+        ip_counter, created = IPVisitCounter.objects.get_or_create(
+            ip_address=client_ip,
+            defaults={'visit_count': 1}
         )
-        request.session['visited'] = True
+        
+        if not created:
+            # Если IP уже существует, увеличиваем счетчик
+            ip_counter.visit_count += 1
+            ip_counter.save()
+    except Exception as e:
+        print(f"Error updating IP counter: {e}")
+    
+    # Считаем посещение страницы (для обратной совместимости)
+    if not request.session.get('visited'):
+        try:
+            PageVisit.objects.create(
+                ip_address=client_ip,
+                user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
+            request.session['visited'] = True
+        except Exception as e:
+            print(f"Error creating page visit: {e}")
     
     # Получаем или создаем идентификатор сессии для этого пользователя
     if not request.session.get('user_session_id'):
@@ -134,15 +154,29 @@ def button_click(request):
     return JsonResponse({'status': 'error'})
 
 def download_pdf(request):
-    """Скачивание PDF файла с отслеживанием"""
-    # Получаем session_id из сессии
+    """Скачивание PDF файла с улучшенным отслеживанием"""
+    # Получаем session_id из сессии и IP клиента
     user_session_id = request.session.get('user_session_id')
+    client_ip = get_client_ip(request)
+    
+    # Отмечаем скачивание в счетчике IP
+    try:
+        ip_counter = IPVisitCounter.objects.filter(ip_address=client_ip).first()
+        if ip_counter:
+            ip_counter.pdf_downloaded = True
+            ip_counter.save()
+            print(f"Отмечено скачивание PDF для IP: {client_ip}")
+    except Exception as e:
+        print(f"Error updating IP PDF counter: {e}")
     
     # Если есть session_id, ищем записи и отмечаем скачивание
     if user_session_id:
-        # Находим все записи с этим session_id и отмечаем их
-        SurveyResponse.objects.filter(session_id=user_session_id).update(pdf_downloaded=True)
-        print(f"Отмечено скачивание PDF для session_id: {user_session_id}")
+        try:
+            # Находим все записи с этим session_id и отмечаем их
+            SurveyResponse.objects.filter(session_id=user_session_id).update(pdf_downloaded=True)
+            print(f"Отмечено скачивание PDF для session_id: {user_session_id}")
+        except Exception as e:
+            print(f"Error updating session PDF: {e}")
     
     pdf_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'pdf', 'regulation.pdf')
     
@@ -156,26 +190,45 @@ def download_pdf(request):
         return response
 
 def pdf_button_click(request):
-    """Обработка нажатия кнопки скачивания PDF"""
+    """Обработка нажатия кнопки скачивания PDF с улучшенной логикой"""
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             user_session_id = data.get('session_id')
             email = data.get('email', '').strip()
+            client_ip = get_client_ip(request)
             
+            updated_count = 0
+            
+            # Всегда отмечаем скачивание для IP
+            try:
+                ip_counter = IPVisitCounter.objects.filter(ip_address=client_ip).first()
+                if ip_counter:
+                    ip_counter.pdf_downloaded = True
+                    ip_counter.save()
+                    print(f"Отмечено скачивание PDF для IP: {client_ip}")
+            except Exception as e:
+                print(f"Error updating IP PDF counter: {e}")
+            
+            # Если есть session_id, отмечаем для всех записей с этим session_id
             if user_session_id:
-                # Отмечаем скачивание для всех записей с этим session_id
-                updated_count = SurveyResponse.objects.filter(
-                    session_id=user_session_id
-                ).update(pdf_downloaded=True)
-                print(f"Отмечено скачивание PDF для session_id: {user_session_id}, обновлено записей: {updated_count}")
+                try:
+                    updated_count += SurveyResponse.objects.filter(
+                        session_id=user_session_id
+                    ).update(pdf_downloaded=True)
+                    print(f"Отмечено скачивание PDF для session_id: {user_session_id}")
+                except Exception as e:
+                    print(f"Error updating session PDF: {e}")
             
-            elif email:
-                # Если нет session_id, но есть email, отмечаем для этого email
-                updated_count = SurveyResponse.objects.filter(
-                    email__iexact=email
-                ).update(pdf_downloaded=True)
-                print(f"Отмечено скачивание PDF для email: {email}, обновлено записей: {updated_count}")
+            # Если есть email, отмечаем для этого email
+            if email:
+                try:
+                    updated_count += SurveyResponse.objects.filter(
+                        email__iexact=email
+                    ).update(pdf_downloaded=True)
+                    print(f"Отмечено скачивание PDF для email: {email}")
+                except Exception as e:
+                    print(f"Error updating email PDF: {e}")
             
             return JsonResponse({'status': 'success', 'updated_count': updated_count})
             

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SurveyResponse, PageVisit
+from .models import SurveyResponse, PageVisit, IPVisitCounter
 
 @admin.register(SurveyResponse)
 class SurveyResponseAdmin(admin.ModelAdmin):
@@ -55,4 +55,20 @@ class PageVisitAdmin(admin.ModelAdmin):
         return False
     
     def has_change_permission(self, request, obj=None):
+        return False
+
+# НОВАЯ АДМИНКА ДЛЯ СЧЕТЧИКА IP
+@admin.register(IPVisitCounter)
+class IPVisitCounterAdmin(admin.ModelAdmin):
+    list_display = ['ip_address', 'visit_count', 'pdf_downloaded_status', 'first_visit', 'last_visit']
+    list_filter = ['pdf_downloaded', 'first_visit', 'last_visit']
+    search_fields = ['ip_address']
+    readonly_fields = ['ip_address', 'first_visit', 'last_visit', 'visit_count']
+    ordering = ['-visit_count']
+    
+    def pdf_downloaded_status(self, obj):
+        return '📥 Скачан' if obj.pdf_downloaded else '📄 Не скачан'
+    pdf_downloaded_status.short_description = 'PDF статус'
+    
+    def has_add_permission(self, request):
         return False
